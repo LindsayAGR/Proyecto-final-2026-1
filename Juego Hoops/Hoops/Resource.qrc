@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/Imagenes">
+        <file>Imagenes/Jugador1.png</file>
+        <file>Imagenes/inicio.png</file>
+    </qresource>
+    <qresource prefix="/sonidos">
+        <file>Sonidos/Start1.mp3</file>
+    </qresource>
+</RCC>

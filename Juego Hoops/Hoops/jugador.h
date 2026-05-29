@@ -1,43 +1,36 @@
 #ifndef JUGADOR_H
 #define JUGADOR_H
 
+#include <QObject>
 #include <QGraphicsPixmapItem>
+#include <QTimer>
 
-class Jugador : public QGraphicsPixmapItem
+class Jugador : public QObject, public QGraphicsPixmapItem
 {
-private:
-
-    // posicion
-    float x;
-    float y;
-
-    // velocidades
-    float velocidadX;
-    float velocidadY;
-
-    // estados
-    bool saltando;
-    bool tieneBalon;
-
-    // gravedad
-    float gravedad;
+    Q_OBJECT
 
 public:
+    explicit Jugador(QObject *parent = nullptr);
 
-    // constructor
-    Jugador(QPixmap pixmap);
-
-    // movimiento
-    void moverIzquierda();
-    void moverDerecha();
-
-    // acciones
+    void mover();
     void saltar();
     void lanzar();
 
-    // actualizar fisicas
-    void actualizar();
+private:
+    float velocidadY;
+    int x, y;
+    int velocidadX;
+    bool tieneBalon;
+    bool esIA;
+    bool saltando;
 
+    // animacion
+    QTimer *timerAnimacion;
+    int frameActual;
+    QPixmap frames[4];
+
+private slots:
+    void actualizarFrame();
 };
 
 #endif // JUGADOR_H

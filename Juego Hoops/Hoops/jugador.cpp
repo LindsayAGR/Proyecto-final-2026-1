@@ -1,68 +1,50 @@
 #include "jugador.h"
 
-Jugador::Jugador(QPixmap pixmap)
-    : QGraphicsPixmapItem(pixmap)
+Jugador::Jugador(QObject *parent)
+    : QObject(parent), QGraphicsPixmapItem()
 {
-    // posicion inicial
-    x = 100;
-    y = 500;
-
-    // velocidades
-    velocidadX = 5;
+    // atributos
     velocidadY = 0;
+    velocidadX = 5;
+    tieneBalon = false;
+    esIA       = false;
+    saltando   = false;
+    frameActual = 0;
 
-    // estados
-    saltando = false;
-    tieneBalon = true;
+    // cargar frames
+    frames[0] = QPixmap(":/Imagenes/Imagenes/juga1.1.png");
+    frames[1] = QPixmap(":/Imagenes/Imagenes/juga1.2.png");
+    frames[2] = QPixmap(":/Imagenes/Imagenes/juga1.3.png");
+    frames[3] = QPixmap(":/Imagenes/Imagenes/juga1.4.png");
 
-    // gravedad
-    gravedad = 0.5;
+    setPixmap(frames[0]);
 
-    // posicion en pantalla
-    setPos(x, y);
+    // timer animacion
+    timerAnimacion = new QTimer(this);
+    connect(timerAnimacion, &QTimer::timeout, this, &Jugador::actualizarFrame);
+    timerAnimacion->start(150);
 }
 
-void Jugador::moverIzquierda()
+void Jugador::actualizarFrame()
 {
-    x -= velocidadX;
-    setPos(x, y);
+    frameActual = (frameActual + 1) % 4;
+    setPixmap(frames[frameActual]);
 }
 
-void Jugador::moverDerecha()
+void Jugador::mover()
 {
-    x += velocidadX;
     setPos(x, y);
 }
 
 void Jugador::saltar()
 {
-    if(!saltando)
-    {
-        velocidadY = -12;
-        saltando = true;
+    if (!saltando) {
+        saltando   = true;
+        velocidadY = -15;
     }
 }
 
 void Jugador::lanzar()
 {
-
-}
-
-void Jugador::actualizar()
-{
-    // gravedad
-    velocidadY += gravedad;
-
-    // mover en Y
-    y += velocidadY;
-
-    // piso
-    if(y >= 500)
-    {
-        y = 500;
-        velocidadY = 0;
-        saltando = false;
-    }
-
-    setPos(x, y);
+    // aquí irá el lanzamiento del balón
 }

@@ -8,6 +8,7 @@
 #include <QMediaPlayer>
 #include <QAudioOutput>
 #include <QPushButton>
+#include "nivel1.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -35,6 +36,9 @@ private:
     QMediaPlayer *musicaInicio;
 
     QPushButton *btnPlay;
+
+
+    Nivel1 *nivel1;
 };
 
 #endif // WIDGET_H

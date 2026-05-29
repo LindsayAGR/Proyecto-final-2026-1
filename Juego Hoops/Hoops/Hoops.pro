@@ -11,10 +11,14 @@ CONFIG += c++17
 SOURCES += \
     jugador.cpp \
     main.cpp \
+    nivel.cpp \
+    nivel1.cpp \
     widget.cpp
 
 HEADERS += \
     jugador.h \
+    nivel.h \
+    nivel1.h \
     widget.h
 
 FORMS += \

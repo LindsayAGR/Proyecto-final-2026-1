@@ -2,6 +2,7 @@
     <qresource prefix="/Imagenes">
         <file>Imagenes/Jugador1.png</file>
         <file>Imagenes/inicio.png</file>
+        <file>Imagenes/fondo_nivel1.png</file>
     </qresource>
     <qresource prefix="/sonidos">
         <file>Sonidos/Start1.mp3</file>

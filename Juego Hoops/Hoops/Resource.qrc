@@ -1,8 +1,12 @@
 <RCC>
     <qresource prefix="/Imagenes">
-        <file>Imagenes/Jugador1.png</file>
         <file>Imagenes/inicio.png</file>
         <file>Imagenes/fondo_nivel1.png</file>
+        <file>Imagenes/juga1.1.png</file>
+        <file>Imagenes/juga1.2.png</file>
+        <file>Imagenes/juga1.3.png</file>
+        <file>Imagenes/juga1.4.png</file>
+        <file>Imagenes/balon.png</file>
     </qresource>
     <qresource prefix="/sonidos">
         <file>Sonidos/Start1.mp3</file>

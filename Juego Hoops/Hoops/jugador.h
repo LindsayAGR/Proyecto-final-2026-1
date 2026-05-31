@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QGraphicsPixmapItem>
 #include <QTimer>
+#include <QtMath>
 
 class Jugador : public QObject, public QGraphicsPixmapItem
 {
@@ -15,6 +16,10 @@ public:
     void mover();
     void saltar();
     void lanzar();
+    void aplicarGravedad();
+    void driblar();
+    void soltarBalon();
+    void actualizarDrible();
 
 private:
     float velocidadY;
@@ -23,11 +28,18 @@ private:
     bool tieneBalon;
     bool esIA;
     bool saltando;
+    bool balonCayendo;
+    float balonVelY;
+    float anguloBalon;
+
 
     // animacion
     QTimer *timerAnimacion;
     int frameActual;
     QPixmap frames[4];
+
+    QGraphicsPixmapItem *balon;
+    bool driblando;
 
 private slots:
     void actualizarFrame();

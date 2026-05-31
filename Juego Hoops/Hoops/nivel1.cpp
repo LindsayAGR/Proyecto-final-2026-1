@@ -9,10 +9,13 @@ Nivel1::Nivel1(QWidget *parent)
 void Nivel1::iniciar()
 {
     escena = new QGraphicsScene(this);
+    escena->setSceneRect(0, 0, 800, 600);
     setScene(escena);
+
     setFixedSize(800, 600);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
 
     // fondo
     QPixmap fondoImg(":/Imagenes/Imagenes/fondo_nivel1.png");
@@ -33,37 +36,45 @@ void Nivel1::iniciar()
 
     // jugador
     jugador = new Jugador(this);
-    jugador->setPos(100, 400);
+    jugador->setPos(100, 450);
     escena->addItem(jugador);
 
     // timer juego
     timerJuego = new QTimer(this);
     connect(timerJuego, &QTimer::timeout, this, &Nivel1::gameLoop);
     timerJuego->start(16);
+
+    setFocus();
 }
 
 void Nivel1::actualizar()
 {
-    // mover jugador
-    jugador->mover();
+
+    //gravedad
+    jugador->aplicarGravedad();
+
+
+    jugador->actualizarDrible();
 }
 
 void Nivel1::controlarJugador(QKeyEvent *evento)
 {
-    if (evento->key() == Qt::Key_D)
-        jugador->mover();
     if (evento->key() == Qt::Key_Space)
         jugador->saltar();
+    if (evento->key() == Qt::Key_Z)
+        jugador->driblar();
 }
 
 void Nivel1::keyPressEvent(QKeyEvent *evento)
 {
+    qDebug() << "tecla presionada:" << evento->key();
     controlarJugador(evento);
 }
 
 void Nivel1::keyReleaseEvent(QKeyEvent *evento)
 {
-    Q_UNUSED(evento);
+    if (evento->key() == Qt::Key_Z)
+        jugador->soltarBalon();
 }
 
 void Nivel1::gameLoop()
@@ -73,8 +84,8 @@ void Nivel1::gameLoop()
 
 void Nivel1::moverFondo()
 {
-    bgImageFon1->setPos(bgImageFon1->x() - 0.5, 0);
-    bgImageFon2->setPos(bgImageFon2->x() - 0.5, 0);
+    bgImageFon1->setPos(bgImageFon1->x() - 1, 0);
+    bgImageFon2->setPos(bgImageFon2->x() - 1, 0);
 
     if (bgImageFon1->x() <= -bgImageFon1->pixmap().width())
         bgImageFon1->setPos(bgImageFon2->x() + bgImageFon2->pixmap().width(), 0);

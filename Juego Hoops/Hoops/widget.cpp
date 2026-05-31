@@ -58,6 +58,6 @@ void Widget::iniciarNivel1()
     nivel1->setGeometry(0, 0, 800, 600);
     nivel1->iniciar();
     nivel1->show();
-
+    setFixedSize(800, 600);
 
 }

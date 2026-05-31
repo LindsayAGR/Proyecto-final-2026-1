@@ -21,6 +21,8 @@ public:
     void actualizar()       override;
     void controlarJugador(QKeyEvent *evento);
 
+
+
 protected:
     void keyPressEvent(QKeyEvent *evento)   override;
     void keyReleaseEvent(QKeyEvent *evento) override;

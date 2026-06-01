@@ -44,6 +44,12 @@ void Nivel1::iniciar()
     connect(timerJuego, &QTimer::timeout, this, &Nivel1::gameLoop);
     timerJuego->start(16);
 
+    contadorSpawn = 0;
+    spawnTimer = new QTimer(this);
+    connect(spawnTimer, &QTimer::timeout, this, &Nivel1::spawnObstaculo);
+    spawnTimer->start(2000);
+
+
     setFocus();
 }
 
@@ -84,12 +90,19 @@ void Nivel1::gameLoop()
 
 void Nivel1::moverFondo()
 {
-    bgImageFon1->setPos(bgImageFon1->x() - 1, 0);
-    bgImageFon2->setPos(bgImageFon2->x() - 1, 0);
+    bgImageFon1->setPos(bgImageFon1->x() - 4, 0);
+    bgImageFon2->setPos(bgImageFon2->x() - 4, 0);
 
     if (bgImageFon1->x() <= -bgImageFon1->pixmap().width())
         bgImageFon1->setPos(bgImageFon2->x() + bgImageFon2->pixmap().width(), 0);
 
     if (bgImageFon2->x() <= -bgImageFon2->pixmap().width())
         bgImageFon2->setPos(bgImageFon1->x() + bgImageFon1->pixmap().width(), 0);
+}
+
+void Nivel1::spawnObstaculo()
+{
+    contadorSpawn++;
+    Obstaculo *obs = new Obstaculo(this);
+    escena->addItem(obs);
 }

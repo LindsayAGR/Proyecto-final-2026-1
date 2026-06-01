@@ -9,6 +9,9 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QTimer>
+#include "obstaculo.h"
+#include <cstdlib>
+#include <ctime>
 
 class Nivel1 : public QGraphicsView, public Nivel
 {
@@ -34,11 +37,15 @@ private:
     QGraphicsPixmapItem *bgImageFon1, *bgImageFon2;
 
     QGraphicsScene *escena;
-    QTimer *bgTimer;
+    QTimer *bgTimer, *spawnTimer;
+
+    int contadorSpawn;
 
 private slots:
     void gameLoop();
     void moverFondo();
+
+    void spawnObstaculo();
 };
 
 #endif // NIVEL1_H

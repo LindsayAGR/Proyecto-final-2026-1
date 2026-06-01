@@ -7,6 +7,9 @@
         <file>Imagenes/juga1.3.png</file>
         <file>Imagenes/juga1.4.png</file>
         <file>Imagenes/balon.png</file>
+        <file>Imagenes/obstaculo1.png</file>
+        <file>Imagenes/obstaculo2.png</file>
+        <file>Imagenes/obstaculo3.png</file>
     </qresource>
     <qresource prefix="/sonidos">
         <file>Sonidos/Start1.mp3</file>

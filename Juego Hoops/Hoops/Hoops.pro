@@ -13,12 +13,14 @@ SOURCES += \
     main.cpp \
     nivel.cpp \
     nivel1.cpp \
+    obstaculo.cpp \
     widget.cpp
 
 HEADERS += \
     jugador.h \
     nivel.h \
     nivel1.h \
+    obstaculo.h \
     widget.h
 
 FORMS += \

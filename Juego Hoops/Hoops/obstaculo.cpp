@@ -1,8 +1,10 @@
 #include "obstaculo.h"
 
-Obstaculo::Obstaculo(QObject *parent)
+Obstaculo::Obstaculo(Jugador *jugador, QObject *parent)
     : QObject(parent), QGraphicsPixmapItem()
 {
+    this->jugador = jugador;
+
     srand(time(NULL));
     int randObs = rand() % 3 + 1;
     QPixmap img;
@@ -23,7 +25,7 @@ Obstaculo::Obstaculo(QObject *parent)
     setPixmap(img.scaled(70, 90, Qt::KeepAspectRatio));
 
     setPos(800, 490);
-    velocidad = 3;
+    velocidad = 3.5;
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Obstaculo::mover);
@@ -35,10 +37,32 @@ void Obstaculo::mover()
     int newX = x() - velocidad;
     setPos(newX, y());
 
-    if (newX + pixmap().width() <= 0) {
-        if (scene()) scene()->removeItem(this);
+    if (collidesWithItem(jugador))
+    {
+        timer->stop();
+        emit colision();
+
+        if(scene())
+            scene()->removeItem(this);
+
+        deleteLater();
+        return;
+    }
+
+    if (newX + pixmap().width() <= 0)
+    {
+        emit eliminado(this);
+        if(scene())
+            scene()->removeItem(this);
+
+        emit eliminado(this);
         deleteLater();
     }
+}
+
+void Obstaculo::detenerTimer()
+{
+    timer->stop();
 }
 
 bool Obstaculo::detectarColision(QGraphicsPixmapItem *jugador)

@@ -12,10 +12,12 @@
 #include "obstaculo.h"
 #include <cstdlib>
 #include <ctime>
+#include <QPushButton>
 
 class Nivel1 : public QGraphicsView, public Nivel
 {
     Q_OBJECT
+
 
 public:
     explicit Nivel1(QWidget *parent = nullptr);
@@ -40,12 +42,38 @@ private:
     QTimer *bgTimer, *spawnTimer;
 
     int contadorSpawn;
+    QPushButton *btnReiniciar;
+
+    //vidas
+    int vidas;
+    int tiempoRestante;
+    QTimer *timerCronometro;
+    QGraphicsTextItem *textoTiempo;
+    QGraphicsPixmapItem *vida1, *vida2, *vida3, *aro;
+
+    Obstaculo *obstaculos[20];
+    int cantObstaculos;
+
+    bool juegoTerminado;
+    bool lanzando;
+
+
 
 private slots:
     void gameLoop();
     void moverFondo();
 
     void spawnObstaculo();
+    void mostrarGameOver();
+    void reiniciar();
+
+    void actualizarCronometro();
+    void tiempoAgotado();
+    void actualizarVidas();
+    void eliminarObstaculo(Obstaculo *obs);
+
+    void nivelCompletado();
+    void lanzamientoFallido();
 };
 
 #endif // NIVEL1_H

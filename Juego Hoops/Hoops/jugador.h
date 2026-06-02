@@ -20,6 +20,8 @@ public:
     void driblar();
     void soltarBalon();
     void actualizarDrible();
+    void detenerAnimacion();
+    void actualizarLanzamiento(float aroX, float aroY);
 
 private:
     float velocidadY;
@@ -41,8 +43,16 @@ private:
     QGraphicsPixmapItem *balon;
     bool driblando;
 
+    float balonVelX;
+    bool lanzando;
+
 private slots:
     void actualizarFrame();
+
+
+signals:
+    void encesto();
+    void fallo();
 };
 
 #endif // JUGADOR_H

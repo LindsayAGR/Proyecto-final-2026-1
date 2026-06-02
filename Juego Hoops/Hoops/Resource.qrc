@@ -10,6 +10,11 @@
         <file>Imagenes/obstaculo1.png</file>
         <file>Imagenes/obstaculo2.png</file>
         <file>Imagenes/obstaculo3.png</file>
+        <file>Imagenes/gameOver.png</file>
+        <file>Imagenes/vidas1.png</file>
+        <file>Imagenes/vidas2.png</file>
+        <file>Imagenes/vidas3.png</file>
+        <file>Imagenes/aro.png</file>
     </qresource>
     <qresource prefix="/sonidos">
         <file>Sonidos/Start1.mp3</file>

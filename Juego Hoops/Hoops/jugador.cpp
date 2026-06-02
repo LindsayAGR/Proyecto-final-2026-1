@@ -68,7 +68,13 @@ void Jugador::saltar()
 
 void Jugador::lanzar()
 {
-    // aquí irá el lanzamiento del balón
+    if (balonCayendo || lanzando) return;
+    lanzando = true;
+    driblando = false;
+    balonVelY = -20;
+    balonVelX = 12;
+    balon->setParentItem(nullptr);
+    balon->setPos(scenePos().x() + 40, scenePos().y() + 30);
 }
 
 void Jugador::aplicarGravedad()
@@ -116,5 +122,29 @@ void Jugador::actualizarDrible()
         float nuevaY = 50 + 20*qSin(anguloBalon);
 
         balon->setPos(40,nuevaY);
+    }
+}
+
+void Jugador::detenerAnimacion()
+{
+    timerAnimacion->stop();
+}
+
+
+void Jugador::actualizarLanzamiento(float aroX, float aroY)
+{
+    if (!lanzando) return;
+
+    balonVelY += 0.8;
+    balon->setPos(balon->x() + balonVelX, balon->y() + balonVelY);
+
+    if (qAbs(balon->x() - aroX) < 40 && qAbs(balon->y() - aroY) < 40) {
+        lanzando = false;
+        emit encesto();
+    }
+
+    if (balon->x() > 850 || balon->y() > 650) {
+        lanzando = false;
+        emit fallo();
     }
 }

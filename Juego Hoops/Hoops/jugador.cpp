@@ -13,6 +13,9 @@ Jugador::Jugador(QObject *parent)
     x = 100;
     y = 450;
     anguloBalon = 0;
+    lanzando = false;
+    anguloLanzamiento = -20;
+
 
     // cargar frames
     frames[0] = QPixmap(":/Imagenes/Imagenes/juga1.1.png");
@@ -49,6 +52,11 @@ void Jugador::actualizarFrame()
     if (balonCayendo) {
         balonVelY += 1;
         balon->setPos(balon->x() - 3, balon->y() + balonVelY);
+
+        if (balon->y() > 600) {
+            balonCayendo = false;
+            emit balonCayo();
+        }
     }
 }
 
@@ -65,16 +73,17 @@ void Jugador::saltar()
         velocidadY = -15;
     }
 }
-
 void Jugador::lanzar()
 {
-    if (balonCayendo || lanzando) return;
+    if (lanzando) return;
     lanzando = true;
     driblando = false;
-    balonVelY = -20;
+    balonCayendo = false;
+    balonVelY = anguloLanzamiento;
     balonVelX = 12;
     balon->setParentItem(nullptr);
     balon->setPos(scenePos().x() + 40, scenePos().y() + 30);
+    balon->setZValue(20);
 }
 
 void Jugador::aplicarGravedad()
@@ -147,4 +156,14 @@ void Jugador::actualizarLanzamiento(float aroX, float aroY)
         lanzando = false;
         emit fallo();
     }
+}
+
+void Jugador::subirAngulo()
+{
+    if (anguloLanzamiento > -25) anguloLanzamiento -= 1;
+}
+
+void Jugador::bajarAngulo()
+{
+    if (anguloLanzamiento < -10) anguloLanzamiento += 1;
 }

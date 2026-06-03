@@ -45,6 +45,7 @@ void Obstaculo::mover()
         if(scene())
             scene()->removeItem(this);
 
+        emit eliminado(this);
         deleteLater();
         return;
     }

@@ -22,6 +22,12 @@ public:
     void actualizarDrible();
     void detenerAnimacion();
     void actualizarLanzamiento(float aroX, float aroY);
+    void subirAngulo();
+    void bajarAngulo();
+
+
+
+    QGraphicsPixmapItem* getBalon() { return balon; }
 
 private:
     float velocidadY;
@@ -33,6 +39,7 @@ private:
     bool balonCayendo;
     float balonVelY;
     float anguloBalon;
+    float anguloLanzamiento;
 
 
     // animacion
@@ -43,8 +50,10 @@ private:
     QGraphicsPixmapItem *balon;
     bool driblando;
 
+
     float balonVelX;
     bool lanzando;
+
 
 private slots:
     void actualizarFrame();
@@ -53,6 +62,7 @@ private slots:
 signals:
     void encesto();
     void fallo();
+    void balonCayo();
 };
 
 #endif // JUGADOR_H

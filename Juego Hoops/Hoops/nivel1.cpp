@@ -8,6 +8,8 @@ Nivel1::Nivel1(QWidget *parent)
     lanzando = false;
     juegoTerminado = false;
     cantObstaculos = 0;
+    faseLanzamiento = false;
+
     for (int i = 0; i < 20; i++)
         obstaculos[i] = nullptr;
 }
@@ -58,13 +60,13 @@ void Nivel1::iniciar()
 
 
     // cronometro
-    tiempoRestante = 30;
+    tiempoRestante = 20;
     textoTiempo = new QGraphicsTextItem();
     textoTiempo->setDefaultTextColor(Qt::white);
     textoTiempo->setFont(QFont("Arial", 20, QFont::Bold));
     textoTiempo->setPos(350, 10);
     textoTiempo->setZValue(50);
-    textoTiempo->setPlainText("0:30");
+    textoTiempo->setPlainText("0:20");
     escena->addItem(textoTiempo);
 
     timerCronometro = new QTimer(this);
@@ -98,22 +100,37 @@ void Nivel1::actualizar()
     jugador->aplicarGravedad();
     jugador->actualizarDrible();
 
-    if (aro != nullptr)
-        jugador->actualizarLanzamiento(aro->x() + 50, aro->y() + 30);
 
 }
 
 void Nivel1::controlarJugador(QKeyEvent *evento)
 {
+    qDebug() << "Tecla detectada:" << evento->key();
+
     if (evento->key() == Qt::Key_Space)
         jugador->saltar();
+
     if (evento->key() == Qt::Key_Z)
         jugador->driblar();
 
-
-    if (evento->key() == Qt::Key_Return && tiempoRestante <= 0)
+    if (evento->key() == Qt::Key_Return && faseLanzamiento)
+    {
+        qDebug() << "ENTER PRESIONADO";
         jugador->lanzar();
+    }
+
+    if (evento->key() == Qt::Key_O && faseLanzamiento)
+        jugador->subirAngulo();
+
+    if (evento->key() == Qt::Key_L && faseLanzamiento)
+        jugador->bajarAngulo();
+
+    if (evento->key() == Qt::Key_Return)
+    {
+        qDebug()<<"fase lanzamiento ="<<faseLanzamiento;
+    }
 }
+
 
 void Nivel1::keyPressEvent(QKeyEvent *evento)
 {
@@ -123,8 +140,9 @@ void Nivel1::keyPressEvent(QKeyEvent *evento)
 
 void Nivel1::keyReleaseEvent(QKeyEvent *evento)
 {
-    if (evento->key() == Qt::Key_Z)
+    if (evento->key() == Qt::Key_Z) {
         jugador->soltarBalon();
+    }
 }
 
 void Nivel1::gameLoop()
@@ -147,9 +165,18 @@ void Nivel1::moverFondo()
 void Nivel1::spawnObstaculo()
 {
     Obstaculo *obs = new Obstaculo(jugador, this);
+
     connect(obs, &Obstaculo::colision, this, &Nivel1::mostrarGameOver);
     connect(obs, &Obstaculo::eliminado, this, &Nivel1::eliminarObstaculo);
+    connect(jugador, &Jugador::balonCayo, this, &Nivel1::restarVidaBalon);
+
     escena->addItem(obs);
+
+    if(cantObstaculos < 20)
+    {
+        obstaculos[cantObstaculos] = obs;
+        cantObstaculos++;
+    }
 }
 void Nivel1::mostrarGameOver()
 {
@@ -204,11 +231,15 @@ void Nivel1::actualizarVidas()
 
 void Nivel1::eliminarObstaculo(Obstaculo *obs)
 {
-    for (int i = 0; i < cantObstaculos; i++)
-        if (obstaculos[i] == obs)
+    for(int i=0; i<cantObstaculos; i++)
+    {
+        if(obstaculos[i] == obs)
+        {
             obstaculos[i] = nullptr;
+            break;
+        }
+    }
 }
-
 void Nivel1::actualizarCronometro()
 {
     tiempoRestante--;
@@ -228,8 +259,10 @@ void Nivel1::actualizarCronometro()
 
 void Nivel1::tiempoAgotado()
 {
+
+   // timerJuego->stop();
+    faseLanzamiento = true;
     juegoTerminado = true;
-    timerJuego->stop();
     bgTimer->stop();
     spawnTimer->stop();
     jugador->detenerAnimacion();
@@ -258,10 +291,24 @@ void Nivel1::tiempoAgotado()
     connect(jugador, &Jugador::encesto, this, &Nivel1::nivelCompletado);
     connect(jugador, &Jugador::fallo,   this, &Nivel1::lanzamientoFallido);
 
+    timerLanzamiento = new QTimer(this);
+    connect(timerLanzamiento, &QTimer::timeout, this, &Nivel1::actualizarLanzamiento);
+    timerLanzamiento->start(16);
+
+    timerTexto = new QTimer(this);
+    connect(timerTexto, &QTimer::timeout, this, [=](){
+        escena->removeItem(txtVictoria);
+        timerTexto->stop();
+    });
+    timerTexto->start(3000);
+
 }
 
 void Nivel1::nivelCompletado()
 {
+    timerLanzamiento->stop();
+   jugador->getBalon()->setPos(aro->x() + 35, aro->y() + 60);
+
     QGraphicsTextItem *txt = new QGraphicsTextItem("¡ENCESTADO! Nivel 1 completado");
     txt->setDefaultTextColor(Qt::yellow);
     txt->setFont(QFont("Arial", 24, QFont::Bold));
@@ -279,4 +326,32 @@ void Nivel1::lanzamientoFallido()
     txt->setPos(150, 250);
     txt->setZValue(100);
     escena->addItem(txt);
+}
+
+void Nivel1::actualizarLanzamiento()
+{
+    if (aro != nullptr)
+        jugador->actualizarLanzamiento(aro->x() + 50, aro->y() + 30);
+}
+
+void Nivel1::restarVidaBalon()
+{
+    if (juegoTerminado) return;
+    vidas--;
+    actualizarVidas();
+
+    QGraphicsTextItem *txt = new QGraphicsTextItem("¡Soltaste el balón! -1 vida");
+    txt->setDefaultTextColor(Qt::red);
+    txt->setFont(QFont("Arial", 24, QFont::Bold));
+    txt->setPos(200, 200);
+    txt->setZValue(100);
+    escena->addItem(txt);
+
+    QTimer::singleShot(2000, this, [=](){
+        escena->removeItem(txt);
+        delete txt;
+    });
+
+    if (vidas <= 0)
+        mostrarGameOver();
 }

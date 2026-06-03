@@ -25,7 +25,7 @@ public:
     void iniciar()          override;
     void actualizar()       override;
     void controlarJugador(QKeyEvent *evento);
-
+    bool faseLanzamiento;
 
 
 protected:
@@ -47,8 +47,8 @@ private:
     //vidas
     int vidas;
     int tiempoRestante;
-    QTimer *timerCronometro;
-    QGraphicsTextItem *textoTiempo;
+    QTimer *timerCronometro, *timerLanzamiento, *timerTexto;
+    QGraphicsTextItem *textoTiempo, *txtVictoria;
     QGraphicsPixmapItem *vida1, *vida2, *vida3, *aro;
 
     Obstaculo *obstaculos[20];
@@ -74,6 +74,8 @@ private slots:
 
     void nivelCompletado();
     void lanzamientoFallido();
+    void actualizarLanzamiento();
+    void restarVidaBalon();
 };
 
 #endif // NIVEL1_H

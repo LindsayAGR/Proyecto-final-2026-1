@@ -47,6 +47,8 @@ void Nivel1::iniciar()
     jugador->setPos(100, 450);
     escena->addItem(jugador);
 
+    connect(jugador, &Jugador::balonCayo, this, &Nivel1::restarVidaBalon);
+
     // timer juego
     timerJuego = new QTimer(this);
     connect(timerJuego, &QTimer::timeout, this, &Nivel1::gameLoop);
@@ -110,7 +112,7 @@ void Nivel1::controlarJugador(QKeyEvent *evento)
     if (evento->key() == Qt::Key_Space)
         jugador->saltar();
 
-    if (evento->key() == Qt::Key_Z)
+    if (evento->key() == Qt::Key_Control)
         jugador->driblar();
 
     if (evento->key() == Qt::Key_Return && faseLanzamiento)
@@ -140,7 +142,7 @@ void Nivel1::keyPressEvent(QKeyEvent *evento)
 
 void Nivel1::keyReleaseEvent(QKeyEvent *evento)
 {
-    if (evento->key() == Qt::Key_Z) {
+    if (evento->key() == Qt::Key_Control) {
         jugador->soltarBalon();
     }
 }
@@ -168,7 +170,7 @@ void Nivel1::spawnObstaculo()
 
     connect(obs, &Obstaculo::colision, this, &Nivel1::mostrarGameOver);
     connect(obs, &Obstaculo::eliminado, this, &Nivel1::eliminarObstaculo);
-    connect(jugador, &Jugador::balonCayo, this, &Nivel1::restarVidaBalon);
+
 
     escena->addItem(obs);
 
@@ -315,7 +317,18 @@ void Nivel1::nivelCompletado()
     txt->setPos(100, 250);
     txt->setZValue(100);
     escena->addItem(txt);
-    // aquí irá la transición al nivel 2
+
+
+
+    btnNivel2 = new QPushButton("IR AL NIVEL 2", this);
+    btnNivel2->setGeometry(300, 400, 200, 50);
+    btnNivel2->show();
+    connect(btnNivel2, &QPushButton::clicked, this, &Nivel1::irNivel2);
+}
+
+void Nivel1::irNivel2()
+{
+    emit pasarNivel2();
 }
 
 void Nivel1::lanzamientoFallido()

@@ -15,6 +15,13 @@
         <file>Imagenes/vidas2.png</file>
         <file>Imagenes/vidas3.png</file>
         <file>Imagenes/aro.png</file>
+        <file>Imagenes/fondo2.png</file>
+        <file>Imagenes/equipo1.2.png</file>
+        <file>Imagenes/equipo1.1.png</file>
+        <file>Imagenes/equipo1.3.png</file>
+        <file>Imagenes/equipo2.1.png</file>
+        <file>Imagenes/equipo2.2.png</file>
+        <file>Imagenes/equipo2.3.png</file>
     </qresource>
     <qresource prefix="/sonidos">
         <file>Sonidos/Start1.mp3</file>

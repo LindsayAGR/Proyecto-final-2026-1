@@ -3,47 +3,100 @@
 Jugador::Jugador(QObject *parent)
     : QObject(parent), QGraphicsPixmapItem()
 {
-    // atributos
-    velocidadY = 0;
-    velocidadX = 5;
-    tieneBalon = false;
-    esIA       = false;
-    saltando   = false;
-    frameActual = 0;
-    x = 100;
-    y = 450;
-    anguloBalon = 0;
     lanzando = false;
+    driblando = false;
+    balonCayendo = false;
+    balonVelY = 0;
     anguloLanzamiento = -20;
+    anguloBalon = 0;
+    x = 100; y = 450;
+    velocidadX = 5;
+    velocidadY = 0;
+    saltando = false;
+    tieneBalon = false;
+    esIA = false;
+    frameActual = 0;
+    modoNivel2 = false;
 
-
-    // cargar frames
-    frames[0] = QPixmap(":/Imagenes/Imagenes/juga1.1.png");
-    frames[1] = QPixmap(":/Imagenes/Imagenes/juga1.2.png");
-    frames[2] = QPixmap(":/Imagenes/Imagenes/juga1.3.png");
-    frames[3] = QPixmap(":/Imagenes/Imagenes/juga1.4.png");
-
-    frames[0] = frames[0].scaled(80, 100, Qt::KeepAspectRatio);
-    frames[1] = frames[1].scaled(80, 100, Qt::KeepAspectRatio);
-    frames[2] = frames[2].scaled(80, 100, Qt::KeepAspectRatio);
-    frames[3] = frames[3].scaled(80, 100, Qt::KeepAspectRatio);
+    frames[0] = QPixmap(":/Imagenes/Imagenes/juga1.1.png").scaled(80, 100, Qt::KeepAspectRatio);
+    frames[1] = QPixmap(":/Imagenes/Imagenes/juga1.2.png").scaled(80, 100, Qt::KeepAspectRatio);
+    frames[2] = QPixmap(":/Imagenes/Imagenes/juga1.3.png").scaled(80, 100, Qt::KeepAspectRatio);
+    frames[3] = QPixmap(":/Imagenes/Imagenes/juga1.4.png").scaled(80, 100, Qt::KeepAspectRatio);
     setPixmap(frames[0]);
 
-    // timer animacion
     timerAnimacion = new QTimer(this);
     connect(timerAnimacion, &QTimer::timeout, this, &Jugador::actualizarFrame);
     timerAnimacion->start(150);
 
-    // balon
     balon = new QGraphicsPixmapItem(QPixmap(":/Imagenes/Imagenes/balon.png").scaled(30, 30, Qt::KeepAspectRatio));
     balon->setParentItem(this);
     balon->setPos(40, 60);
+}
+
+Jugador::Jugador(bool esNivel2, QObject *parent)
+    : QObject(parent), QGraphicsPixmapItem()
+{
+    lanzando = false;
     driblando = false;
     balonCayendo = false;
     balonVelY = 0;
+    anguloLanzamiento = -20;
+    anguloBalon = 0;
+    x = 0; y = 0;
+    velocidadX = 0;
+    velocidadY = 0;
+    saltando = false;
+    tieneBalon = false;
+    esIA = false;
+    frameActual = 0;
+    modoNivel2 = esNivel2;
 
+    if (!esNivel2) {
+        // cargar frames nivel 1
+        frames[0] = QPixmap(":/Imagenes/Imagenes/juga1.1.png").scaled(80, 100, Qt::KeepAspectRatio);
+        frames[1] = QPixmap(":/Imagenes/Imagenes/juga1.2.png").scaled(80, 100, Qt::KeepAspectRatio);
+        frames[2] = QPixmap(":/Imagenes/Imagenes/juga1.3.png").scaled(80, 100, Qt::KeepAspectRatio);
+        frames[3] = QPixmap(":/Imagenes/Imagenes/juga1.4.png").scaled(80, 100, Qt::KeepAspectRatio);
+        setPixmap(frames[0]);
+        timerAnimacion = new QTimer(this);
+        connect(timerAnimacion, &QTimer::timeout, this, &Jugador::actualizarFrame);
+        timerAnimacion->start(150);
+    }
+
+    balon = new QGraphicsPixmapItem(QPixmap(":/Imagenes/Imagenes/balon.png").scaled(30, 30, Qt::KeepAspectRatio));
+    balon->setParentItem(this);
+    balon->setPos(40, 60);
 }
 
+void Jugador::actualizarLanzamiento(float aroX, float aroY)
+{
+    if (!lanzando) return;
+
+    float gravedad, limiteX, limiteY;
+
+    if (modoNivel2) {
+        gravedad = 0.3;
+        limiteX  = 1700;
+        limiteY  = 1300;
+    } else {
+        gravedad = 0.8;
+        limiteX  = 850;
+        limiteY  = 650;
+    }
+
+    balonVelY += gravedad;
+    balon->setPos(balon->x() + balonVelX, balon->y() + balonVelY);
+
+    if (qAbs(balon->x() - aroX) < 60 && qAbs(balon->y() - aroY) < 60) {
+        lanzando = false;
+        emit encesto();
+    }
+
+    if (balon->x() > limiteX || balon->y() > limiteY || balon->x() < 0) {
+        lanzando = false;
+        emit fallo();
+    }
+}
 void Jugador::actualizarFrame()
 {
     frameActual = (frameActual + 1) % 4;
@@ -140,24 +193,6 @@ void Jugador::detenerAnimacion()
 }
 
 
-void Jugador::actualizarLanzamiento(float aroX, float aroY)
-{
-    if (!lanzando) return;
-
-    balonVelY += 0.8;
-    balon->setPos(balon->x() + balonVelX, balon->y() + balonVelY);
-
-    if (qAbs(balon->x() - aroX) < 40 && qAbs(balon->y() - aroY) < 40) {
-        lanzando = false;
-        emit encesto();
-    }
-
-    if (balon->x() > 850 || balon->y() > 650) {
-        lanzando = false;
-        emit fallo();
-    }
-}
-
 void Jugador::subirAngulo()
 {
     if (anguloLanzamiento > -25) anguloLanzamiento -= 1;
@@ -166,4 +201,19 @@ void Jugador::subirAngulo()
 void Jugador::bajarAngulo()
 {
     if (anguloLanzamiento < -10) anguloLanzamiento += 1;
+}
+
+void Jugador::setPixmapJugador(QString ruta)
+{
+    // limpiar frames anteriores
+    for (int i = 0; i < 4; i++)
+        frames[i] = QPixmap();
+
+    QPixmap img(ruta);
+    setPixmap(img.scaled(50, 60, Qt::KeepAspectRatio));
+}
+
+QGraphicsPixmapItem* Jugador::getBalon()
+{
+    return balon;
 }

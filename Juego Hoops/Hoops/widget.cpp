@@ -60,4 +60,15 @@ void Widget::iniciarNivel1()
     nivel1->show();
     setFixedSize(800, 600);
 
+    connect(nivel1, &Nivel1::pasarNivel2, this, &Widget::iniciarNivel2);
+
+}
+
+void Widget::iniciarNivel2()
+{
+    nivel1->hide();
+    nivel2 = new Nivel2(this);
+    nivel2->setGeometry(0, 0, 800, 600);
+    nivel2->iniciar();
+    nivel2->show();
 }

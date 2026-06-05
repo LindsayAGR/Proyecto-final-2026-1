@@ -13,6 +13,7 @@ SOURCES += \
     main.cpp \
     nivel.cpp \
     nivel1.cpp \
+    nivel2.cpp \
     obstaculo.cpp \
     widget.cpp
 
@@ -20,6 +21,7 @@ HEADERS += \
     jugador.h \
     nivel.h \
     nivel1.h \
+    nivel2.h \
     obstaculo.h \
     widget.h
 

@@ -26,7 +26,7 @@ public:
     void actualizar()       override;
     void controlarJugador(QKeyEvent *evento);
     bool faseLanzamiento;
-
+    void irNivel2();
 
 protected:
     void keyPressEvent(QKeyEvent *evento)   override;
@@ -57,6 +57,9 @@ private:
     bool juegoTerminado;
     bool lanzando;
 
+    QPushButton *btnNivel2;
+    bool modoNivel2;
+
 
 
 private slots:
@@ -76,6 +79,9 @@ private slots:
     void lanzamientoFallido();
     void actualizarLanzamiento();
     void restarVidaBalon();
+
+signals:
+    void pasarNivel2();
 };
 
 #endif // NIVEL1_H

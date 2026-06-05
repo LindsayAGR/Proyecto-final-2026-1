@@ -9,6 +9,7 @@
 #include <QAudioOutput>
 #include <QPushButton>
 #include "nivel1.h"
+#include "nivel2.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,6 +27,9 @@ public:
 
     void mostrarInicio();
     void iniciarNivel1();
+    void iniciarNivel2();
+
+
 
 private:
     Ui::Widget *ui;
@@ -39,6 +43,9 @@ private:
 
 
     Nivel1 *nivel1;
+
+    Nivel2 *nivel2;
+
 };
 
 #endif // WIDGET_H

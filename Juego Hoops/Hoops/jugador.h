@@ -24,10 +24,16 @@ public:
     void actualizarLanzamiento(float aroX, float aroY);
     void subirAngulo();
     void bajarAngulo();
+    void setPixmapJugador(QString ruta);
 
 
+    QGraphicsPixmapItem* getBalon();
+    int getX() { return x; }
+    int getY() { return y; }
 
-    QGraphicsPixmapItem* getBalon() { return balon; }
+    explicit Jugador(bool esNivel2, QObject *parent = nullptr);
+
+    bool isLanzando() { return lanzando; }
 
 private:
     float velocidadY;
@@ -53,6 +59,8 @@ private:
 
     float balonVelX;
     bool lanzando;
+
+    bool modoNivel2;
 
 
 private slots:

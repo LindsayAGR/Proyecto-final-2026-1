@@ -54,6 +54,7 @@ private:
 private slots:
     void gameLoop();
     void moverIASlot();
+
     void resetearJugadores();
 
 };

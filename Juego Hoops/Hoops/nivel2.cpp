@@ -177,16 +177,23 @@ void Nivel2::controlarJugador(QKeyEvent *evento)
         actual->setPos(actual->pos().x()+5,
                        actual->pos().y());
 
-    for(int i=0;i<3;i++)
+    for(int i = 0; i < 3; i++)
     {
         if(actual->collidesWithItem(rival[i]))
         {
-            rival[i]->getBalon()->setParentItem(actual);
+            if(rival[i]->getBalon()->parentItem() == rival[i])
+            {
+                // ocultar balon del rival
+                rival[i]->getBalon()->hide();
+                rival[i]->getBalon()->setParentItem(nullptr);
 
-            rival[i]->getBalon()->setPos(20,20);
+                // mostrar balon del jugador actual
+                actual->getBalon()->setParentItem(actual);
+                actual->getBalon()->setPos(20, 20);
+                actual->getBalon()->setVisible(true);
+            }
         }
     }
-
 
     if (evento->key() == Qt::Key_Space) cambiarJugador();
     if (evento->key() == Qt::Key_R)     pasarBalon();
@@ -253,39 +260,32 @@ void Nivel2::robarBalon()
     }
 }
 
-
 void Nivel2::moverIA()
 {
     for(int i = 0; i < 3; i++)
     {
         if(rival[i] && actual)
         {
-            // si el rival tiene el balon, va al aro izquierdo
             if(rival[i]->getBalon()->parentItem() == rival[i])
             {
-                float dx = aroIzqX - rival[i]->pos().x();
-                float dy = aroIzqY - rival[i]->pos().y();
-
-                if(dx > 0) rival[i]->setPos(rival[i]->pos().x() + 3, rival[i]->pos().y());
-                if(dx < 0) rival[i]->setPos(rival[i]->pos().x() - 3, rival[i]->pos().y());
-                if(dy > 0) rival[i]->setPos(rival[i]->pos().x(), rival[i]->pos().y() + 3);
-                if(dy < 0) rival[i]->setPos(rival[i]->pos().x(), rival[i]->pos().y() - 3);
-
-                // si esta cerca del aro lanza
-                if(qAbs(dx) < 100 && qAbs(dy) < 100)
+                qDebug() << "rival" << i << "tiene balon, yendo a" << aroIzqX << aroIzqY;
+                float dx = aroIzqX - rival[i]->scenePos().x();
+                float dy = aroIzqY - rival[i]->scenePos().y();
+                if(dx > 0) rival[i]->setPos(rival[i]->scenePos().x() + 3, rival[i]->scenePos().y());
+                if(dx < 0) rival[i]->setPos(rival[i]->scenePos().x() - 3, rival[i]->scenePos().y());
+                if(dy > 0) rival[i]->setPos(rival[i]->scenePos().x(), rival[i]->scenePos().y() + 3);
+                if(dy < 0) rival[i]->setPos(rival[i]->scenePos().x(), rival[i]->scenePos().y() - 3);
+                if(qAbs(dx) < 150 && qAbs(dy) < 150)
                     rival[i]->lanzar();
             }
             else
             {
-                // perseguir al jugador con balon
                 float dx = actual->getBalon()->scenePos().x() - rival[i]->pos().x();
                 float dy = actual->getBalon()->scenePos().y() - rival[i]->pos().y();
-
                 if(dx > 0) rival[i]->setPos(rival[i]->pos().x() + 3, rival[i]->pos().y());
                 if(dx < 0) rival[i]->setPos(rival[i]->pos().x() - 3, rival[i]->pos().y());
                 if(dy > 0) rival[i]->setPos(rival[i]->pos().x(), rival[i]->pos().y() + 3);
                 if(dy < 0) rival[i]->setPos(rival[i]->pos().x(), rival[i]->pos().y() - 3);
-
                 if(rival[i]->collidesWithItem(actual->getBalon()))
                 {
                     actual->getBalon()->setParentItem(rival[i]);

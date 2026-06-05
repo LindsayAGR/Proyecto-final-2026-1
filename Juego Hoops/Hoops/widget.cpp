@@ -60,6 +60,14 @@ void Widget::iniciarNivel1()
     nivel1->show();
     setFixedSize(800, 600);
 
+    //musica
+    musicaNivel1 = new QMediaPlayer(this);
+    QAudioOutput *sonido = new QAudioOutput(this);
+    musicaNivel1->setAudioOutput(sonido);
+    musicaNivel1->setSource(QUrl("qrc:/sonidos/Sonidos/nivel1.mp3"));
+    sonido->setVolume(0.3);
+    musicaNivel1->play();
+
     connect(nivel1, &Nivel1::pasarNivel2, this, &Widget::iniciarNivel2);
 
 }
@@ -67,8 +75,17 @@ void Widget::iniciarNivel1()
 void Widget::iniciarNivel2()
 {
     nivel1->hide();
+    musicaNivel1->stop();
     nivel2 = new Nivel2(this);
     nivel2->setGeometry(0, 0, 800, 600);
     nivel2->iniciar();
     nivel2->show();
+
+    //musica
+    musicaNivel2 = new QMediaPlayer(this);
+    QAudioOutput *sonido = new QAudioOutput(this);
+    musicaNivel2->setAudioOutput(sonido);
+    musicaNivel2->setSource(QUrl("qrc:/sonidos/Sonidos/nivel2.mp3"));
+    sonido->setVolume(0.3);
+    musicaNivel2->play();
 }

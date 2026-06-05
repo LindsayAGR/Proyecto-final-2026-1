@@ -25,5 +25,7 @@
     </qresource>
     <qresource prefix="/sonidos">
         <file>Sonidos/Start1.mp3</file>
+        <file>Sonidos/nivel1.mp3</file>
+        <file>Sonidos/nivel2.mp3</file>
     </qresource>
 </RCC>

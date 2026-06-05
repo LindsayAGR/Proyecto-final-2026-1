@@ -37,7 +37,7 @@ private:
     QGraphicsScene *sceneInicio;
     QGraphicsPixmapItem *bgInicio;
 
-    QMediaPlayer *musicaInicio;
+    QMediaPlayer *musicaInicio, *musicaNivel1, *musicaNivel2;
 
     QPushButton *btnPlay;
 

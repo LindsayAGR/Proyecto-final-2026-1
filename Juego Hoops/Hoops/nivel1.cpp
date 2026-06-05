@@ -9,6 +9,7 @@ Nivel1::Nivel1(QWidget *parent)
     juegoTerminado = false;
     cantObstaculos = 0;
     faseLanzamiento = false;
+    modoNivel2 = false;
 
     for (int i = 0; i < 20; i++)
         obstaculos[i] = nullptr;

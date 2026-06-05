@@ -58,6 +58,7 @@ private:
     bool lanzando;
 
     QPushButton *btnNivel2;
+    bool modoNivel2;
 
 
 

@@ -33,7 +33,7 @@ public:
 
     explicit Jugador(bool esNivel2, QObject *parent = nullptr);
 
-
+    bool isLanzando() { return lanzando; }
 
 private:
     float velocidadY;
@@ -59,6 +59,8 @@ private:
 
     float balonVelX;
     bool lanzando;
+
+    bool modoNivel2;
 
 
 private slots:

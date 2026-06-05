@@ -6,6 +6,7 @@ Nivel2::Nivel2(QWidget *parent)
     actual = nullptr;
     puntaje = 0;
     gravedad = 0.3;
+    modoNivel2 = true;
 
     for (int i = 0; i < 3; i++) {
         equipo[i] = nullptr;
@@ -109,6 +110,20 @@ void Nivel2::iniciar()
     timerIA->start(500);
 
 
+    puntaje = 0;
+    puntajeRival = 0;
+    textoMarcador = new QGraphicsTextItem("0 - 0");
+    textoMarcador->setDefaultTextColor(Qt::white);
+    textoMarcador->setFont(QFont("Arial", 24, QFont::Bold));
+    textoMarcador->setZValue(50);
+    escenaN2->addItem(textoMarcador);
+
+    for(int i = 0; i < 3; i++)
+        connect(rival[i], &Jugador::fallo, this, &Nivel2::resetearJugadores);
+    connect(equipo[0], &Jugador::fallo, this, &Nivel2::resetearJugadores);
+    connect(equipo[1], &Jugador::fallo, this, &Nivel2::resetearJugadores);
+    connect(equipo[2], &Jugador::fallo, this, &Nivel2::resetearJugadores);
+
     setFocusPolicy(Qt::StrongFocus);
     setFocus();
 }
@@ -117,43 +132,29 @@ void Nivel2::actualizar()
 {
     if(actual)
     {
+        textoMarcador->setPos(actual->scenePos().x() - 50, actual->scenePos().y() - 150);
         centerOn(actual);
 
-        actual->actualizarLanzamiento(
-            1400,
-            600
-            );
+        actual->actualizarLanzamiento(aroDerX,aroDerY);
     }
 
     verificarPunto();
 
 
-    for(int i=0;i<3;i++)
+    for(int i = 0; i < 3; i++)
     {
-        if(equipo[i]!=actual)
+        if(equipo[i] != actual)
         {
-
-            float dx =
-                actual->scenePos().x()
-                - equipo[i]->scenePos().x();
-
-            float dy =
-                actual->scenePos().y()
-                - equipo[i]->scenePos().y();
-
-
+            float dx = actual->scenePos().x() - equipo[i]->scenePos().x();
             equipo[i]->setPos(
-
-                    equipo[i]->scenePos().x()
-                    + dx*0.002,
-
+                equipo[i]->scenePos().x() + dx * 0.002,
                 equipo[i]->scenePos().y()
-                    + dy*0.002
-
                 );
-
         }
     }
+    for(int i = 0; i < 3; i++)
+        if(rival[i])
+            rival[i]->actualizarLanzamiento(aroIzqX, aroIzqY);
 
 }
 void Nivel2::controlarJugador(QKeyEvent *evento)
@@ -190,6 +191,8 @@ void Nivel2::controlarJugador(QKeyEvent *evento)
     if (evento->key() == Qt::Key_Space) cambiarJugador();
     if (evento->key() == Qt::Key_R)     pasarBalon();
     if (evento->key() == Qt::Key_Return) lanzarBalon();
+    qDebug() << "pos jugador:" << actual->scenePos().x() << actual->scenePos().y();
+
 }
 
 void Nivel2::cambiarJugador()
@@ -250,73 +253,78 @@ void Nivel2::robarBalon()
     }
 }
 
+
 void Nivel2::moverIA()
 {
-    for(int i=0;i<3;i++)
+    for(int i = 0; i < 3; i++)
     {
         if(rival[i] && actual)
         {
-
-            float dx =
-                actual->getBalon()->scenePos().x()
-                - rival[i]->pos().x();
-
-            float dy =
-                actual->getBalon()->scenePos().y()
-                - rival[i]->pos().y();
-
-
-            if(dx > 0)
-                rival[i]->setPos(
-                    rival[i]->pos().x()+3,
-                    rival[i]->pos().y()
-                    );
-
-            if(dx < 0)
-                rival[i]->setPos(
-                    rival[i]->pos().x()-3,
-                    rival[i]->pos().y()
-                    );
-
-
-            if(dy > 0)
-                rival[i]->setPos(
-                    rival[i]->pos().x(),
-                    rival[i]->pos().y()+3
-                    );
-
-            if(dy < 0)
-                rival[i]->setPos(
-                    rival[i]->pos().x(),
-                    rival[i]->pos().y()-3
-                    );
-
-
-
-            // robo balón
-
-            if(rival[i]->collidesWithItem(
-                    actual->getBalon()))
+            // si el rival tiene el balon, va al aro izquierdo
+            if(rival[i]->getBalon()->parentItem() == rival[i])
             {
-                actual->getBalon()->setParentItem(
-                    rival[i]);
+                float dx = aroIzqX - rival[i]->pos().x();
+                float dy = aroIzqY - rival[i]->pos().y();
 
-                actual->getBalon()->setPos(
-                    20,
-                    20
-                    );
+                if(dx > 0) rival[i]->setPos(rival[i]->pos().x() + 3, rival[i]->pos().y());
+                if(dx < 0) rival[i]->setPos(rival[i]->pos().x() - 3, rival[i]->pos().y());
+                if(dy > 0) rival[i]->setPos(rival[i]->pos().x(), rival[i]->pos().y() + 3);
+                if(dy < 0) rival[i]->setPos(rival[i]->pos().x(), rival[i]->pos().y() - 3);
+
+                // si esta cerca del aro lanza
+                if(qAbs(dx) < 100 && qAbs(dy) < 100)
+                    rival[i]->lanzar();
             }
+            else
+            {
+                // perseguir al jugador con balon
+                float dx = actual->getBalon()->scenePos().x() - rival[i]->pos().x();
+                float dy = actual->getBalon()->scenePos().y() - rival[i]->pos().y();
 
+                if(dx > 0) rival[i]->setPos(rival[i]->pos().x() + 3, rival[i]->pos().y());
+                if(dx < 0) rival[i]->setPos(rival[i]->pos().x() - 3, rival[i]->pos().y());
+                if(dy > 0) rival[i]->setPos(rival[i]->pos().x(), rival[i]->pos().y() + 3);
+                if(dy < 0) rival[i]->setPos(rival[i]->pos().x(), rival[i]->pos().y() - 3);
+
+                if(rival[i]->collidesWithItem(actual->getBalon()))
+                {
+                    actual->getBalon()->setParentItem(rival[i]);
+                    actual->getBalon()->setPos(20, 20);
+                }
+            }
         }
     }
 }
 
-
 void Nivel2::verificarPunto()
 {
-    // aquí irá la lógica de enceste
-}
+    // enceste azul
+    float bx = actual->getBalon()->scenePos().x();
+    float by = actual->getBalon()->scenePos().y();
+    if(qAbs(bx - aroDerX) < 80 && qAbs(by - aroDerY) < 80)
+    {
+        puntaje++;
+        textoMarcador->setPlainText(QString::number(puntaje) + " - " + QString::number(puntajeRival));
+        resetearJugadores();
+        return;
+    }
 
+    // enceste rojo
+    for(int i = 0; i < 3; i++)
+    {
+        if(rival[i])
+        {
+            QPointF bposRojo = rival[i]->getBalon()->scenePos();
+            if(qAbs(bposRojo.x() - aroIzqX) < 80 && qAbs(bposRojo.y() - aroIzqY) < 80)
+            {
+                puntajeRival++;
+                textoMarcador->setPlainText(QString::number(puntaje) + " - " + QString::number(puntajeRival));
+                resetearJugadores();
+                return;
+            }
+        }
+    }
+}
 void Nivel2::keyPressEvent(QKeyEvent *evento)
 {
     controlarJugador(evento);
@@ -337,4 +345,25 @@ void Nivel2::gameLoop()
 void Nivel2::moverIASlot()
 {
     moverIA();
+}
+
+void Nivel2::resetearJugadores()
+{
+    equipo[0]->setPos(650, 600);
+    equipo[1]->setPos(520, 500);
+    equipo[2]->setPos(520, 700);
+
+    rival[0]->setPos(950, 600);
+    rival[1]->setPos(1100, 400);
+    rival[2]->setPos(1100, 800);
+
+    actual = equipo[0];
+    actual->getBalon()->setParentItem(actual);
+    actual->getBalon()->setPos(20, 20);
+    actual->getBalon()->setVisible(true);
+
+    for(int i = 1; i < 3; i++)
+        equipo[i]->getBalon()->hide();
+    for(int i = 0; i < 3; i++)
+        rival[i]->getBalon()->hide();
 }

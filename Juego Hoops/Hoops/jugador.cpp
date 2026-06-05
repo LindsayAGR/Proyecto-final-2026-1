@@ -16,6 +16,7 @@ Jugador::Jugador(QObject *parent)
     tieneBalon = false;
     esIA = false;
     frameActual = 0;
+    modoNivel2 = false;
 
     frames[0] = QPixmap(":/Imagenes/Imagenes/juga1.1.png").scaled(80, 100, Qt::KeepAspectRatio);
     frames[1] = QPixmap(":/Imagenes/Imagenes/juga1.2.png").scaled(80, 100, Qt::KeepAspectRatio);
@@ -48,6 +49,7 @@ Jugador::Jugador(bool esNivel2, QObject *parent)
     tieneBalon = false;
     esIA = false;
     frameActual = 0;
+    modoNivel2 = esNivel2;
 
     if (!esNivel2) {
         // cargar frames nivel 1
@@ -66,6 +68,35 @@ Jugador::Jugador(bool esNivel2, QObject *parent)
     balon->setPos(40, 60);
 }
 
+void Jugador::actualizarLanzamiento(float aroX, float aroY)
+{
+    if (!lanzando) return;
+
+    float gravedad, limiteX, limiteY;
+
+    if (modoNivel2) {
+        gravedad = 0.3;
+        limiteX  = 1700;
+        limiteY  = 1300;
+    } else {
+        gravedad = 0.8;
+        limiteX  = 850;
+        limiteY  = 650;
+    }
+
+    balonVelY += gravedad;
+    balon->setPos(balon->x() + balonVelX, balon->y() + balonVelY);
+
+    if (qAbs(balon->x() - aroX) < 60 && qAbs(balon->y() - aroY) < 60) {
+        lanzando = false;
+        emit encesto();
+    }
+
+    if (balon->x() > limiteX || balon->y() > limiteY || balon->x() < 0) {
+        lanzando = false;
+        emit fallo();
+    }
+}
 void Jugador::actualizarFrame()
 {
     frameActual = (frameActual + 1) % 4;
@@ -161,24 +192,6 @@ void Jugador::detenerAnimacion()
     timerAnimacion->stop();
 }
 
-
-void Jugador::actualizarLanzamiento(float aroX, float aroY)
-{
-    if (!lanzando) return;
-
-    balonVelY += 0.8;
-    balon->setPos(balon->x() + balonVelX, balon->y() + balonVelY);
-
-    if (qAbs(balon->x() - aroX) < 40 && qAbs(balon->y() - aroY) < 40) {
-        lanzando = false;
-        emit encesto();
-    }
-
-    if (balon->x() > 850 || balon->y() > 650) {
-        lanzando = false;
-        emit fallo();
-    }
-}
 
 void Jugador::subirAngulo()
 {

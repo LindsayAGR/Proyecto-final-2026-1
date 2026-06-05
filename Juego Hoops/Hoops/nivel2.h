@@ -43,9 +43,19 @@ private:
     QTimer              *timerJuegoN2;
     QTimer              *timerIA;
 
+    int aroDerX = 1320, aroDerY = 460;   // aro azules
+    int aroIzqX = 255,  aroIzqY = 450;   // aro rojos
+
+    bool modoNivel2;
+
+    int puntajeRival;
+    QGraphicsTextItem *textoMarcador;
+
 private slots:
     void gameLoop();
     void moverIASlot();
+    void resetearJugadores();
+
 };
 
 #endif // NIVEL2_H
